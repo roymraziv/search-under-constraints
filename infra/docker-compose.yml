@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16.4
+    container_name: pg_local
+    environment:
+      - POSTGRES_DB=app_db
+      - POSTGRES_USER=app
+      - POSTGRES_PASSWORD=app_pw
+      - TZ=UTC
+    ports:
+      - 5432:5432
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ['CMD-SHELL', "pg_isready -U app -d app_db"]
+      interval: 3s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
