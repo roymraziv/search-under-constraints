@@ -1,0 +1,25 @@
+runs: 50
+warmup: 5
+
+variants:
+ - V0_baseline_none
+ - V1_btree
+ - V2_trgm_name
+ - V3_trgm_search_text
+ - V4_fts_search_vector
+
+queries:
+ - Q1_name_substring
+ - Q2_name_common
+ - Q3_search_text_substring
+ - Q4_search_plus_filter
+ - Q5_offset_pagination
+ - Q6_keyset_pagination
+
+session:
+  timezone: "UTC"
+
+# optionally configure pagination here instead of in the query
+pagination:
+  offset: 100
+  limit: 25

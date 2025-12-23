@@ -1,0 +1,50 @@
+seed: 12345
+rows: 100000
+
+timestamps:
+  base_utc: "2025-01-01T00:00:00Z"
+  step_seconds: 1
+
+distributions:
+  brands:
+    SpecialtyFarms: 0.30
+    GreenFields: 0.18
+    NaturesBest: 0.16
+    PureHarvest: 0.14
+    FarmersChoice: 0.12
+    VitalFoods: 0.10
+  
+  categories:
+    Snacks: 0.25
+    Beverages: 0.18
+    Frozen: 0.14
+    Pantry: 0.18
+    Produce: 0.14
+    Supplements: 0.08
+
+token_injection:
+  common_row_rate: 0.35
+  rare_row_rate: 0.03
+
+  fields:
+    name: 0.25
+    description: 0.75
+
+  description_tokens:
+    min: 20
+    max: 60
+  
+  duplicates:
+    near_duplicate_row_rate: 0.05
+  
+  rare_tokens:
+    prefix: "rare-"
+    start: 1
+    end: 20000
+    width: 6
+  
+  templates:
+    name_patterns:
+      - "{adj} {noun}"
+      - "{brandish} {noun}"
+      - "{adj} {noun} {qualifier}"
