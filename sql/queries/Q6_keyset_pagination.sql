@@ -1,5 +1,5 @@
 SELECT *
 FROM products
-WHERE (name, id) > (:last_name, :last_id)
+WHERE (name, id) > (%(last_name)s, %(last_id)s)
 ORDER BY name, id
-LIMIT 25;
+LIMIT %(limit)s;

@@ -1,7 +1,7 @@
 BEGIN;
 
 ALTER TABLE products ADD COLUMN search_vector tsvector
-GENERATE ALWAYS AS (
+GENERATED ALWAYS AS (
     to_tsvector('english', concat_ws(' ', name, brand, category, description))
 ) STORED;
 

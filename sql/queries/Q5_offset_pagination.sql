@@ -1,5 +1,5 @@
 SELECT *
 FROM products
 ORDER BY name
-OFFSET 100
-LIMIT 25;
+OFFSET %(offset)s
+LIMIT %(limit)s;

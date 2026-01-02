@@ -1,3 +1,3 @@
 SELECT *
 FROM products
-WHERE name ILIKE '%chicken%';
+WHERE name ILIKE %(pattern)s;
