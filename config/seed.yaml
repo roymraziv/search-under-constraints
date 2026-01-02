@@ -17,34 +17,33 @@ distributions:
   categories:
     Snacks: 0.25
     Beverages: 0.18
-    Frozen: 0.14
-    Pantry: 0.18
+    Frozen: 0.16
+    Pantry: 0.19
     Produce: 0.14
     Supplements: 0.08
 
 token_injection:
   common_row_rate: 0.35
   rare_row_rate: 0.03
-
   fields:
     name: 0.25
     description: 0.75
 
-  description_tokens:
-    min: 20
-    max: 60
-  
-  duplicates:
-    near_duplicate_row_rate: 0.05
-  
-  rare_tokens:
-    prefix: "rare-"
-    start: 1
-    end: 20000
-    width: 6
-  
-  templates:
-    name_patterns:
-      - "{adj} {noun}"
-      - "{brandish} {noun}"
-      - "{adj} {noun} {qualifier}"
+description_tokens:
+  min: 20
+  max: 60
+
+duplicates:
+  near_duplicate_row_rate: 0.05
+
+rare_tokens:
+  prefix: "rare-"
+  start: 1
+  end: 20000
+  width: 6
+
+templates:
+  name_patterns:
+    - "{adj} {noun}"
+    - "{brandish} {noun}"
+    - "{adj} {noun} {qualifier}"
