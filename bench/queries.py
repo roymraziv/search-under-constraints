@@ -87,7 +87,7 @@ def get_query_scenario(name: str, queries_dir: Path = _DEFAULT_QUERIES_DIR) -> Q
     # Small explicit mapping for known dependencies.
     # Keep this tight and auditable.
     requires_search_text = name in {"Q3_search_text_substring", "Q4_search_plus_filter"}
-    requires_search_vector = name in set()  # add FTS query scenarios later if you introduce them
+    requires_search_vector = name in {"Q7_fts_search", "Q8_fts_phrase"}
 
     return QueryScenario(
         name=name,
@@ -159,10 +159,10 @@ def build_query_params(
         #
         # Best compromise:
         # - pick a deterministic row index "anchor_index"
-        # - compute that row’s deterministic UUID
-        # - compute that row’s base_name (same logic as generator), but WITHOUT importing generator here
+        # - compute that row's deterministic UUID
+        # - compute that row's base_name (same logic as generator), but WITHOUT importing generator here
         #
-        # Problem: generator’s near-duplicate + injection could alter final name.
+        # Problem: generator's near-duplicate + injection could alter final name.
         # If we attempt to match the final name exactly without DB lookup, we risk mismatch.
         #
         # So for Q6 we should anchor by a value that definitely exists.
@@ -178,6 +178,18 @@ def build_query_params(
             "last_id": "00000000-0000-0000-0000-000000000000",
             "limit": bench_cfg.pagination.limit,
         }
+
+    # Q7 — Full-text search
+    if name == "Q7_fts_search":
+        # Use same token as Q3 for comparability: "organic"
+        # to_tsquery format: simple word (PostgreSQL handles conversion)
+        return {"query": "organic"}
+
+    # Q8 — Selective full-text search
+    if name == "Q8_fts_phrase":
+        # Use same selective term as Q1 for comparability: "worc"
+        # to_tsquery format: simple word (PostgreSQL handles conversion)
+        return {"query": "worc"}
 
     raise KeyError(f"No param builder for scenario: {name}")
 

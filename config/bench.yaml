@@ -15,6 +15,8 @@ queries:
  - Q4_search_plus_filter
  - Q5_offset_pagination
  - Q6_keyset_pagination
+ - Q7_fts_search
+ - Q8_fts_phrase
 
 session:
   timezone: "UTC"

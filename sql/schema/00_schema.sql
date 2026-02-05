@@ -15,6 +15,14 @@ CREATE TABLE products (
         COALESCE(brand, '') || ' ' || 
         COALESCE(category, '') || ' ' || 
         COALESCE(description, '')
+    ) STORED,
+    search_vector tsvector GENERATED ALWAYS AS (
+        to_tsvector('english',
+            COALESCE(name, '') || ' ' ||
+            COALESCE(brand, '') || ' ' ||
+            COALESCE(category, '') || ' ' ||
+            COALESCE(description, '')
+        )
     ) STORED
 );
 
