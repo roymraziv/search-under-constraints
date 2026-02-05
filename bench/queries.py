@@ -87,7 +87,7 @@ def get_query_scenario(name: str, queries_dir: Path = _DEFAULT_QUERIES_DIR) -> Q
     # Small explicit mapping for known dependencies.
     # Keep this tight and auditable.
     requires_search_text = name in {"Q3_search_text_substring", "Q4_search_plus_filter"}
-    requires_search_vector = name in {"Q7_fts_search", "Q8_fts_phrase"}
+    requires_search_vector = name in {"Q7_fts_search", "Q8_fts_substring"}
 
     return QueryScenario(
         name=name,
@@ -186,7 +186,7 @@ def build_query_params(
         return {"query": "organic"}
 
     # Q8 — Selective full-text search
-    if name == "Q8_fts_phrase":
+    if name == "Q8_fts_substring":
         # Use same selective term as Q1 for comparability: "worc"
         # to_tsquery format: simple word (PostgreSQL handles conversion)
         return {"query": "worc"}
