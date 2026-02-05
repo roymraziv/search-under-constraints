@@ -117,24 +117,31 @@ def extract_planner_stats(plan: dict) -> dict:
 
     root_plan = plan["Plan"]
     scan_type = root_plan.get("Node Type", None)
-    index_used = root_plan.get("Index Name", None)
     estimated_rows = root_plan.get("Plan Rows", 0)
     actual_rows = root_plan.get("Actual Rows", 0)
 
-    # Collect all node types in the plan tree
+    # Collect all node types and find index name in the plan tree
     plan_nodes = []
+    index_found = []
 
     def _collect_nodes(node: dict) -> None:
-        """Recursively collect all node types."""
+        """Recursively collect all node types and find index name."""
         node_type = node.get("Node Type")
         if node_type:
             plan_nodes.append(node_type)
+
+        # Check if this node has an index name
+        if "Index Name" in node:
+            index_found.append(node["Index Name"])
 
         if "Plans" in node:
             for child in node["Plans"]:
                 _collect_nodes(child)
 
     _collect_nodes(root_plan)
+    
+    # Use first index found (most plans have one index)
+    index_used = index_found[0] if index_found else None
 
     return {
         "scan_type": scan_type,
