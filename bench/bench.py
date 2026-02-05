@@ -25,7 +25,7 @@ from bench.artifacts import (
     write_summary_csv,
 )
 from bench.config import BenchConfig, SeedConfig, load_bench_config, load_seed_config
-from bench.db import connect, exec_file, exec_sql
+from bench.db import connect, exec_file, exec_sql, fetch_value
 from bench.loader import copy_products
 from bench.measure import Measurement, execute_query_with_timing, measure_query
 from bench.queries import build_query_params, get_query_scenario, list_queries
@@ -221,6 +221,10 @@ def cmd_run(args: argparse.Namespace) -> None:
                     revert_variant(conn, variant)
                 except Exception as e:
                     print(f"WARNING: Failed to revert variant {variant_name}: {e}")
+
+        # Query actual row count from database (may differ from config file)
+        actual_row_count = fetch_value(conn, "SELECT COUNT(*) FROM products")
+        seed_cfg = replace(seed_cfg, rows=actual_row_count)
 
         # Write artifacts
         print(f"\nWriting results to {result_dir}...")
