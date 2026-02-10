@@ -198,17 +198,16 @@ def _extract_buffer_stats(plan: dict) -> dict:
 
     def _walk_plan(node: dict) -> None:
         """Recursively walk plan tree and aggregate buffer stats."""
-        if "Buffers" in node:
-            buf = node["Buffers"]
-            stats["shared_hit"] += buf.get("shared hit", 0)
-            stats["shared_read"] += buf.get("shared read", 0)
-            stats["shared_dirtied"] += buf.get("shared dirtied", 0)
-            stats["shared_written"] += buf.get("shared written", 0)
-            stats["temp_read"] += buf.get("temp read", 0)
-            stats["temp_written"] += buf.get("temp written", 0)
-            stats["local_hit"] += buf.get("local hit", 0)
-            stats["local_read"] += buf.get("local read", 0)
-            stats["local_written"] += buf.get("local written", 0)
+        # Buffer stats are stored directly on the node with capitalized keys
+        stats["shared_hit"] += node.get("Shared Hit Blocks", 0)
+        stats["shared_read"] += node.get("Shared Read Blocks", 0)
+        stats["shared_dirtied"] += node.get("Shared Dirtied Blocks", 0)
+        stats["shared_written"] += node.get("Shared Written Blocks", 0)
+        stats["temp_read"] += node.get("Temp Read Blocks", 0)
+        stats["temp_written"] += node.get("Temp Written Blocks", 0)
+        stats["local_hit"] += node.get("Local Hit Blocks", 0)
+        stats["local_read"] += node.get("Local Read Blocks", 0)
+        stats["local_written"] += node.get("Local Written Blocks", 0)
 
         # Recurse into child plans
         if "Plans" in node:
