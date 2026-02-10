@@ -95,6 +95,46 @@ def compute_percentiles(times: List[float]) -> Percentiles:
 # Planner statistics extraction
 # ----------------------------
 
+# Node types that wrap other operations (not actual scans)
+WRAPPER_NODES = {
+    "Limit",
+    "Gather",
+    "Gather Merge",
+    "Sort",
+    "Materialize",
+    "Memoize",
+    "Append",
+    "Merge Append",
+}
+
+
+def _find_first_scan_node(node: dict, path: List[str] | None = None) -> tuple[str, List[str]]:
+    """
+    Recursively find the first non-wrapper scan node.
+    
+    Returns:
+        (node_type, path) where path is list of node types from root to scan
+    """
+    if path is None:
+        path = []
+    
+    node_type = node.get("Node Type")
+    if node_type:
+        path.append(node_type)
+    
+    # If this is a real scan (not a wrapper), return it
+    if node_type and node_type not in WRAPPER_NODES:
+        return node_type, path
+    
+    # Otherwise, recurse into children
+    if "Plans" in node and node["Plans"]:
+        # Take first child (most plans have one main child)
+        return _find_first_scan_node(node["Plans"][0], path)
+    
+    # Fallback: return root node type if no children
+    return node_type or "Unknown", path
+
+
 def extract_planner_stats(plan: dict) -> dict:
     """
     Extract planner decisions from an EXPLAIN plan.
@@ -116,9 +156,17 @@ def extract_planner_stats(plan: dict) -> dict:
         }
 
     root_plan = plan["Plan"]
-    scan_type = root_plan.get("Node Type", None)
+    root_node_type = root_plan.get("Node Type", None)
     estimated_rows = root_plan.get("Plan Rows", 0)
     actual_rows = root_plan.get("Actual Rows", 0)
+
+    # If root is a wrapper, find underlying scan and format path
+    if root_node_type in WRAPPER_NODES:
+        underlying_scan, path = _find_first_scan_node(root_plan)
+        # Format as "Limit > Index Scan" or "Limit > Gather Merge > Sort > Seq Scan"
+        scan_type = " > ".join(path) if len(path) > 1 else root_node_type
+    else:
+        scan_type = root_node_type
 
     # Collect all node types and find index name in the plan tree
     plan_nodes = []
