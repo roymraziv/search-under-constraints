@@ -54,7 +54,7 @@ def list_queries(queries_dir: Path = _DEFAULT_QUERIES_DIR) -> List[str]:
 
     Convention:
     - scenario name == filename without extension
-      e.g. sql/queries/Q1_name_substring.sql -> "Q1_name_substring"
+      e.g. sql/queries/Q1_name_ilike_selective.sql -> "Q1_name_ilike_selective"
     """
     if not queries_dir.exists():
         raise FileNotFoundError(f"Queries directory not found: {queries_dir}")
@@ -86,8 +86,8 @@ def get_query_scenario(name: str, queries_dir: Path = _DEFAULT_QUERIES_DIR) -> Q
 
     # Small explicit mapping for known dependencies.
     # Keep this tight and auditable.
-    requires_search_text = name in {"Q3_search_text_substring", "Q4_search_plus_filter"}
-    requires_search_vector = name in {"Q7_fts_search", "Q8_fts_substring"}
+    requires_search_text = name in {"Q3_search_text_ilike_common", "Q4_search_text_ilike_filtered"}
+    requires_search_vector = name in {"Q7_fts_common", "Q8_fts_selective"}
 
     return QueryScenario(
         name=name,
@@ -122,20 +122,20 @@ def build_query_params(
 
     # Q1 — Selective substring on name (use a relatively rare-ish token pattern)
     # Your spec example was '%worc%'. We'll keep that exact token for comparability.
-    if name == "Q1_name_substring":
+    if name == "Q1_name_ilike_selective":
         return {"pattern": "%worc%"}  # used by: WHERE name ILIKE %(pattern)s
 
     # Q2 — Non-selective substring on name (high frequency token)
     # Your spec example was '%chicken%'. We'll keep that exact token.
-    if name == "Q2_name_common":
+    if name == "Q2_name_ilike_common":
         return {"pattern": "%chicken%"}
 
     # Q3 — Multi-field substring (search_text) for keyword-style search
-    if name == "Q3_search_text_substring":
+    if name == "Q3_search_text_ilike_common":
         return {"pattern": "%organic%"}
 
     # Q4 — Search + filter
-    if name == "Q4_search_plus_filter":
+    if name == "Q4_search_text_ilike_filtered":
         # Category should be one of your canonical categories (exact match).
         # We pick the modal/hot category from your distribution to stress selectivity.
         # Deterministic choice: max-weight category.
@@ -143,11 +143,11 @@ def build_query_params(
         return {"pattern": "%organic%", "category": category}
 
     # Q5 — OFFSET pagination
-    if name == "Q5_offset_pagination":
+    if name == "Q5_pagination_offset":
         return {"offset": bench_cfg.pagination.offset, "limit": bench_cfg.pagination.limit}
 
     # Q6 — Keyset pagination
-    if name == "Q6_keyset_pagination":
+    if name == "Q6_pagination_keyset":
         # We need a deterministic (last_name, last_id) anchor.
         #
         # Hard rule for determinism:
@@ -180,13 +180,13 @@ def build_query_params(
         }
 
     # Q7 — Full-text search
-    if name == "Q7_fts_search":
+    if name == "Q7_fts_common":
         # Use same token as Q3 for comparability: "organic"
         # to_tsquery format: simple word (PostgreSQL handles conversion)
         return {"query": "organic"}
 
     # Q8 — Selective full-text search
-    if name == "Q8_fts_substring":
+    if name == "Q8_fts_selective":
         # Use same selective term as Q1 for comparability: "worc"
         # to_tsquery format: simple word (PostgreSQL handles conversion)
         return {"query": "worc"}

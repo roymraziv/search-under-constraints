@@ -9,14 +9,14 @@ variants:
  - V4_fts_search_vector
 
 queries:
- - Q1_name_substring
- - Q2_name_common
- - Q3_search_text_substring
- - Q4_search_plus_filter
- - Q5_offset_pagination
- - Q6_keyset_pagination
- - Q7_fts_search
- - Q8_fts_substring
+ - Q1_name_ilike_selective
+ - Q2_name_ilike_common
+ - Q3_search_text_ilike_common
+ - Q4_search_text_ilike_filtered
+ - Q5_pagination_offset
+ - Q6_pagination_keyset
+ - Q7_fts_common
+ - Q8_fts_selective
 
 session:
   timezone: "UTC"
