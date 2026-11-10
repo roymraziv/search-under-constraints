@@ -143,3 +143,5 @@ results/2026-02-05_1752/
 ## What I Learned
 
 I documented my expectations going in, the observed behavior, key deviations from those expectations, and what it changed about my mental model of how PostgreSQL uses indexes. See [WHAT_I_LEARNED.md](WHAT_I_LEARNED.md).
+
+If something here is unclear or out of date, check the scripts in `scripts/` for the source of truth.
